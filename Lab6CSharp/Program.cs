@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Linq;
+using System.Collections.Generic;
 
 namespace Lab5CSharp
 {
@@ -10,8 +10,8 @@ namespace Lab5CSharp
             Console.WriteLine("What task do you want?");
             Console.WriteLine("1. Task 1");
             Console.WriteLine("2. Task 2");
-            Console.WriteLine("2. Task 3");
-            Console.WriteLine("3. Exit");
+            Console.WriteLine("3. Task 3");
+            Console.WriteLine("4. Exit");
 
             int choice;
             bool isValidChoice = false;
@@ -21,7 +21,7 @@ namespace Lab5CSharp
                 Console.Write("Enter number of task: ");
                 isValidChoice = int.TryParse(Console.ReadLine(), out choice);
 
-                if (!isValidChoice || choice < 1 || choice > 3)
+                if (!isValidChoice || choice < 1 || choice > 4)
                 {
                     Console.WriteLine("This task does not exist");
                     isValidChoice = false;
@@ -39,8 +39,12 @@ namespace Lab5CSharp
                 case 3:
                     Task3();
                     break;
+                case 4:
+                    Console.WriteLine("Exiting...");
+                    break;
             }
         }
+
         interface IEmployee
         {
             string Name { get; }
@@ -235,9 +239,117 @@ namespace Lab5CSharp
             }
         }
 
+        class WorkerTask3 : Worker, IEnumerable<WorkerTask3>
+        {
+            public WorkerTask3(string name, string surname, int age) : base(name, surname, age)
+            {
+                Console.WriteLine("Worker constructor called.");
+            }
+
+            ~WorkerTask3()
+            {
+                Console.WriteLine("Worker destructor called.");
+            }
+
+            public override void Show()
+            {
+                base.Show();
+            }
+
+            public IEnumerator<WorkerTask3> GetEnumerator()
+            {
+                yield return this;
+            }
+
+            System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+        }
+
+        class EngineerTask3 : WorkerTask3
+        {
+            public EngineerTask3(string name, string surname, int age, string specialization, double salary) : base(name, surname, age)
+            {
+                Specialization = specialization;
+                Salary = salary;
+                Console.WriteLine("Engineer constructor called.");
+            }
+
+            ~EngineerTask3()
+            {
+                Console.WriteLine("Engineer destructor called.");
+            }
+
+            public string Specialization;
+            public double Salary;
+
+            public override void Show()
+            {
+                base.Show();
+                Console.WriteLine($"Specialization: {Specialization}, Salary: {Salary}");
+            }
+        }
+
+        class HumanResourcesTask3 : WorkerTask3
+        {
+            public HumanResourcesTask3(string name, string surname, int age, string role) : base(name, surname, age)
+            {
+                Role = role;
+                Console.WriteLine("HumanResources constructor called.");
+            }
+
+            ~HumanResourcesTask3()
+            {
+                Console.WriteLine("HumanResources destructor called.");
+            }
+
+            public string Role;
+            public override void Show()
+            {
+                base.Show();
+                Console.WriteLine($"Role: {Role}");
+            }
+        }
+
+        class AdministrationTask3 : HumanResourcesTask3
+        {
+            public AdministrationTask3(string name, string surname, int age, string role, string department) : base(name, surname, age, role)
+            {
+                Department = department;
+                Console.WriteLine("Administration constructor called.");
+            }
+
+            ~AdministrationTask3()
+            {
+                Console.WriteLine("Administration destructor called.");
+            }
+
+            public string Department;
+            public override void Show()
+            {
+                base.Show();
+                Console.WriteLine($"Department: {Department}");
+            }
+        }
+
         static void Task3()
         {
             Console.WriteLine("Task 3");
+            List<WorkerTask3> workers = new List<WorkerTask3>();
+            workers.Add(new WorkerTask3("John", "Doe", 35));
+            workers.Add(new EngineerTask3("Jane", "Smith", 28, "Software Engineering", 50000));
+            workers.Add(new HumanResourcesTask3("Mike", "Johnson", 40, "Recruiter"));
+            workers.Add(new AdministrationTask3("Emily", "Williams", 32, "Manager", "HR"));
+
+            foreach (var worker in workers)
+            {
+                foreach (var item in worker)
+                {
+                    item.Show();
+                    Console.WriteLine();
+                }
+            }
         }
     }
 }
